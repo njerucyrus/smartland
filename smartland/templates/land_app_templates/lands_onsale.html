@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div>
+        <table class="table table-responsive" border="2px">
+            <tr>
+                <td>title_deed</td>
+                <td>map_sheet</td>
+                <td>size</td>
+                <td>location</td>
+                <td>Price</td>
+                <td>Link</td>
+            </tr>
+            {% for land in lands %}
+                <tr>
+                    <td>{{ land.title_deed }}</td>
+                    <td>{{ land.map_sheet }}</td>
+                    <td>{{ land.size }}</td>
+                    <td>{{ land.location }}</td>
+                    <td>{{ land.land_value }}</td>
+                    <td><a href="#">Purchase Now</a></td>
+                </tr>
+
+            {% endfor %}
+
+
+        </table>
+    </div>
+{% endblock %}

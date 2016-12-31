@@ -4,13 +4,13 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
-
 from land.forms import (
     LoginForm,
     UserRegistrationForm,
     LandUserProfileForm,
     LandRegistrationForm,
     LandTransferForm,
+    LandPurchaseForm,
 )
 from land.models import LandUserProfile, Land, LandTransfers
 from payments.models import LandTransferPayment
@@ -97,6 +97,7 @@ def register_land(request):
             photo = cd['photo']
             description = cd['description']
             on_sale = cd['on_sale']
+            land_value = cd['land_value']
             map_sheet = cd['map_sheet']
             land_obj = Land.objects.create(
                 user=profile,
@@ -106,7 +107,8 @@ def register_land(request):
                 size=size,
                 photo=photo,
                 description=description,
-                on_sale=on_sale
+                on_sale=on_sale,
+                land_value=land_value
             )
             land_obj.save()
             success_message = 'Land registered successfully'
@@ -167,6 +169,31 @@ def my_land_list(request):
     profile = get_object_or_404(LandUserProfile, user=user)
     lands = Land.objects.filter(user=profile)
     return render(request, 'land_app_templates/my_land_list.html', {'lands': lands}, )
+
+
+@login_required(login_url='/login/')
+def land_on_sale(request):
+    lands = Land.objects.filter(on_sale=True)
+    return render(request, 'land_app_templates/lands_onsale.html', {'lands': lands, })
+
+
+def purchase_land(request, pk=None):
+    land = get_object_or_404(Land, pk=pk)
+    deposit = float(land.land_value) * 0.75
+    title_deed = land.title_deed
+    initial = {'deposit': deposit, 'title_deed': title_deed}
+
+    if request.method == 'POST':
+        purchase_form = LandPurchaseForm(request.POST, initial=initial)
+
+        if purchase_form.is_valid():
+            cd = purchase_form.cleaned_data
+            phone_number = cd['phone_number']
+            email = cd['email']
+            deposit = cd['deposit']
+
+
+
 
 
 

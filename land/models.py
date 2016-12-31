@@ -20,6 +20,7 @@ class Land(models.Model):
     location = models.CharField(max_length=128, )
     size = models.FloatField()
     photo = models.ImageField(upload_to='land/images/')
+    land_value = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     description = models.TextField(max_length=140)
     on_sale = models.BooleanField(default=False)
 
@@ -40,5 +41,16 @@ class LandTransfers(models.Model):
         return '{0} Transferred on {1}'.format(str(self.new_title_deed), str(self.date_transferred))
 
 
-# class LandPurchases(models.Model):
-#     title_deed = models.CharField(max_length=128, )
+class LandPurchases(models.Model):
+    land = models.ForeignKey(Land, )
+    buyer = models.ForeignKey(LandUserProfile, )
+    deposit = models.DecimalField(default=0.0, max_digits=10, decimal_places=2)
+    phone_number = models.CharField(max_length=13, )
+    email = models.EmailField()
+    date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = 'LandPurchases'
+
+    def __unicode__(self):
+        return str(self.land)

@@ -9,3 +9,8 @@ class LandTransferFeeForm(forms.Form):
     ))
     size = forms.FloatField()
     amount = forms.FloatField()
+
+
+class LandPurchasePayment(forms.Form):
+    land_size = forms.FloatField()
+    amount = forms.FloatField()

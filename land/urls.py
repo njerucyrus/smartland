@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^register-land/$', views.register_land, name='register_land'),
     url(r'^transfer-land/(?P<pk>[0-9])/$', views.transfer_land, name='transfer_land'),
     url(r'^mylands/$', views.my_land_list, name='mylands'),
+    url(r'^lands-onsale/$', views.land_on_sale, name='lands_onsale'),
 ]

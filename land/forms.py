@@ -55,5 +55,12 @@ class LandTransferForm(forms.Form):
     transfer_size = forms.FloatField()
 
 
+class LandPurchaseForm(forms.Form):
+    title_deed = forms.CharField(max_length=32, )
+    phone_number = forms.CharField(max_length=13, )
+    email = forms.EmailField()
+    deposit = forms.DecimalField(max_digits=10, decimal_places=2)
+
+
 
 

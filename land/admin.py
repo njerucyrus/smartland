@@ -10,7 +10,7 @@ class LandUserProfileAdmin(admin.ModelAdmin):
 
 
 class LandAdmin(admin.ModelAdmin):
-    list_display = ['user', 'title_deed', 'map_sheet', 'location', 'size', 'on_sale', 'description']
+    list_display = ['user', 'title_deed', 'map_sheet', 'location', 'size', 'land_value', 'on_sale', 'description']
 
     class Meta:
         model = Land
