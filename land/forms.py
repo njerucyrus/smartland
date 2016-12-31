@@ -39,11 +39,20 @@ class LandRegistrationForm(forms.ModelForm):
         exclude = ('user', )
 
 
-class LandTransferForm(forms.ModelForm):
+class LandTransferForm(forms.Form):
+    title_deed = forms.CharField(max_length=32, widget=forms.TextInput(
+        attrs={'id': 'title_deed_id', }
+    ),)
 
-    class Meta:
-        model = LandTransfers
-        exclude = ('new_title_deed', 'owner', 'date_transferred', )
+    transfer_to = forms.CharField(max_length=32, widget=forms.TextInput(
+        attrs={'id': 'transfer_to_id', }
+    ), label='Transfer_to(Username)')
+
+    relationship = forms.CharField(max_length=32, widget=forms.TextInput(
+        attrs={'id': 'relationship_id', 'placeholder': 'Enter relationship eg(brother, son, daughter)'}
+    ))
+
+    transfer_size = forms.FloatField()
 
 
 

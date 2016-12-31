@@ -104,3 +104,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# AT credentials
+SAND_BOX = True
+if SAND_BOX:
+    USERNAME = 'njerucyrus123'
+    API_KEY = ''
+    PRODUCT_NAME = 'smartland'
+
+PRODUCT_NAME = 'Hudutech'
+
+CURRENCY_CODE = 'KES'
+
+METADATA = {}

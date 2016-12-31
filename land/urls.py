@@ -7,4 +7,6 @@ urlpatterns = [
     url(r'^logout/$', views.logout_user, name='logout'),
     url(r'^signup/$', views.signup, name='signup'),
     url(r'^register-land/$', views.register_land, name='register_land'),
+    url(r'^transfer-land/(?P<pk>[0-9])/$', views.transfer_land, name='transfer_land'),
+    url(r'^mylands/$', views.my_land_list, name='mylands'),
 ]

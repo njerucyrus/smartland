@@ -10,7 +10,7 @@ class LandUserProfileAdmin(admin.ModelAdmin):
 
 
 class LandAdmin(admin.ModelAdmin):
-    list_display = ['user', 'title_deed', 'location', 'size', 'on_sale', 'description']
+    list_display = ['user', 'title_deed', 'map_sheet', 'location', 'size', 'on_sale', 'description']
 
     class Meta:
         model = Land
@@ -21,7 +21,7 @@ class LandTransfersAdmin(admin.ModelAdmin):
         'title_deed',
         'new_title_deed',
         'owner',
-        'transferred_to',
+        'transfer_to',
         'size_transferred',
         'relationship',
         'date_transferred'

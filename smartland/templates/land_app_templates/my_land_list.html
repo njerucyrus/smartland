@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+
+{% block content%}
+
+    <div class="table table-responsive">
+    <tr>
+        <td>#</td>
+        <td>Title deed</td>
+        <td>Map Sheet No</td>
+        <td>Location</td>
+        <td>Size</td>
+        <td>Payment Link</td>
+        <td>Transfer Link</td>
+    </tr>
+    {% for land in lands %}
+      <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ land.title_deed }}</td>
+            <td>{{ land.map_sheet }}</td>
+            <td>{{ land.location }}</td>
+            <td>{{ land.size }}</td>
+            <td><a href="{% url 'payments:transfer_payment' pk=land.pk  %}">Pay Land Transfer Fee</a></td>
+            <td><a href="{% url 'land:transfer_land' pk=land.pk  %}">Transfer Land To Someone Else</a></td>
+      </tr>
+
+    {% endfor %}
+    </div>
+
+
+{% endblock %}

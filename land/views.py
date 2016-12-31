@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http.response import HttpResponseRedirect
+from django.http.response import HttpResponseRedirect, HttpResponse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -13,6 +13,7 @@ from land.forms import (
     LandTransferForm,
 )
 from land.models import LandUserProfile, Land, LandTransfers
+from payments.models import LandTransferPayment
 
 from random import randint
 
@@ -50,7 +51,6 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     return HttpResponseRedirect('/login/')
-
 
 
 @login_required(login_url='/login/')
@@ -97,10 +97,12 @@ def register_land(request):
             photo = cd['photo']
             description = cd['description']
             on_sale = cd['on_sale']
+            map_sheet = cd['map_sheet']
             land_obj = Land.objects.create(
                 user=profile,
                 title_deed=title_deed,
                 location=location,
+                map_sheet=map_sheet,
                 size=size,
                 photo=photo,
                 description=description,
@@ -116,36 +118,55 @@ def register_land(request):
 
 def transfer_land(request, pk=None):
     land = get_object_or_404(Land, pk=pk)
-
-    initial = {'title_deed': land}
+    title_deed = str(land.title_deed)
+    initial = {'title_deed': title_deed, }
     if request.method == 'POST':
+
         transfer_form = LandTransferForm(request.POST, initial=initial)
         if transfer_form.is_valid():
             cd = transfer_form.cleaned_data
-            size_transferred = cd['size_transferred']
+            size_transferred = cd['transfer_size']
             relationship = cd['relationship']
-            id_no = cd['transferred_to']
-            profile = get_object_or_404(LandUserProfile, id_no=id_no)
-
-            user = get_object_or_404(User, username=request.user)
-            owner_profile = get_object_or_404(LandUserProfile, user=user)
-            other_profile = get_object_or_404(LandUserProfile, user=profile.user)
+            transfer_to = cd['transfer_to']
 
             range_start = 10 ** (10 - 1)
             range_end = (10 ** 10) - 1
             new_title_deed = randint(range_start, range_end)
 
-            land_transfer_obj = LandTransfers.objects.create(
-                title_deed=land,
-                new_title_deed=new_title_deed,
-                owner=owner_profile,
-                transferred_to=other_profile,
-                size_transferred=size_transferred,
-                relationship=relationship
-            )
-            land_transfer_obj.save()
+            user = get_object_or_404(User, username=request.user)
+            profile = get_object_or_404(LandUserProfile, user=user)
+            try:
+
+                payment = LandTransferPayment.objects.get(title_deed=title_deed, transferred_size=size_transferred)
+                if payment.status == 'Success':
+                    land_transfer_obj = LandTransfers.objects.create(
+                        title_deed=land,
+                        new_title_deed=new_title_deed,
+                        owner=profile,
+                        transfer_to=transfer_to,
+                        size_transferred=size_transferred,
+                        relationship=relationship
+                    )
+                    land_transfer_obj.save()
+                    success_message = 'Land Transferred Successfully!'
+                    return render(request, 'land_app_templates/transfer_land.html', {'success_message': success_message})
+
+                else:
+                    return HttpResponse('Please make the payment first')
+            except LandTransferPayment.DoesNotExist:
+                return HttpResponse('Please make the payment first')
+
+    else:
+        transfer_form = LandTransferForm()
+    return render(request, 'land_app_templates/transfer_land.html', {'transfer_form': transfer_form, })
 
 
+@login_required(login_url='/login/')
+def my_land_list(request):
+    user = get_object_or_404(User, username=request.user)
+    profile = get_object_or_404(LandUserProfile, user=user)
+    lands = Land.objects.filter(user=profile)
+    return render(request, 'land_app_templates/my_land_list.html', {'lands': lands}, )
 
 
 

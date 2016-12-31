@@ -16,6 +16,7 @@ class LandUserProfile(models.Model):
 class Land(models.Model):
     user = models.ForeignKey(LandUserProfile, )
     title_deed = models.CharField(max_length=32, unique=True)
+    map_sheet = models.CharField(max_length=32, )
     location = models.CharField(max_length=128, )
     size = models.FloatField()
     photo = models.ImageField(upload_to='land/images/')
@@ -28,9 +29,9 @@ class Land(models.Model):
 
 class LandTransfers(models.Model):
     title_deed = models.ForeignKey(Land, related_name='LandTransfers')
-    new_title_deed = models.CharField(max_length=32, )
+    new_title_deed = models.CharField(max_length=32, unique=True)
     owner = models.ForeignKey(LandUserProfile, )
-    transferred_to = models.ForeignKey(LandUserProfile, related_name='TransferredTo')
+    transfer_to = models.CharField(verbose_name='Transfer To (Username)', max_length=32, )
     size_transferred = models.FloatField()
     relationship = models.CharField(max_length=64)
     date_transferred = models.DateField(auto_now_add=True)

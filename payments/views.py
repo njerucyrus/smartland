@@ -1,3 +1,131 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+from land.models import Land
+from payments.forms import LandTransferFeeForm
+from payments.AfricasTalkingGateway import AfricasTalkingGateway, AfricasTalkingGatewayException
+from payments.models import LandTransferPayment
+import json
 
-# Create your views here.
+
+def land_transfer_payment(request, pk=None):
+    land = get_object_or_404(Land, pk=pk)
+    title_deed = land.title_deed
+
+    if request.method == 'POST':
+        payment_form = LandTransferFeeForm(request.POST)
+
+        if payment_form.is_valid():
+            cd = payment_form.cleaned_data
+            phone_number = cd['phone_number']
+            amount = float(cd['amount'])
+            size = float(cd['size'])
+
+            # create checkout here
+            try:
+                username = settings.USERNAME
+                api_key = settings.API_KEY
+                product_name = settings.PRODUCT_NAME
+                currency_code = settings.CURRENCY_CODE
+                metadata = settings.METADATA
+                """  this code will be inactive in production """
+                if settings.SAND_BOX:
+                    gateway = AfricasTalkingGateway(username, api_key)
+                    transaction_id = gateway.initiateMobilePaymentCheckout(
+                        product_name,
+                        phone_number,
+                        currency_code,
+                        amount,
+                        metadata
+                    )
+
+                    payment = LandTransferPayment.objects.create(
+                        transaction_id=transaction_id,
+                        title_deed=title_deed,
+                        transferred_size=size,
+                        phone_number=phone_number,
+                        payment_mode='Mpesa',
+                        amount=amount,
+                    )
+                    payment.save()
+
+                    """ end of sandbox checkout code """
+                else:
+                    gateway = AfricasTalkingGateway(username, api_key, "sandbox")
+                    transaction_id = gateway.initiateMobilePaymentCheckout(
+                        product_name,
+                        phone_number,
+                        currency_code,
+                        amount,
+                        metadata
+                    )
+                    #create payment model instance
+                    payment = LandTransferPayment.objects.create(
+                        transaction_id=transaction_id,
+                        title_deed=title_deed,
+                        transferred_size=size,
+                        phone_number=phone_number,
+                        payment_mode='Mpesa',
+                        amount=amount,
+                    )
+                    payment.save()
+                    success_message = 'Payment Initiated successfully Check your phone to complete the payment'
+                    return render(request, 'payment_app_templates/transfer_payment.html',
+                                  {'success_message': success_message},
+                                  )
+
+            except AfricasTalkingGatewayException, e:
+                err_message = 'Error occurred please try again later'
+                print str(e)
+
+                return render(request,
+                              'payment_app_templates/transfer_payment.html',
+                              {'err_message': err_message},
+                              )
+    else:
+        payment_form = LandTransferFeeForm()
+    return render(
+        request,
+        'payment_app_templates/transfer_payment.html',
+        {'payment_form': payment_form}
+    )
+
+
+@require_http_methods(['POST'])
+@csrf_exempt
+def mpesa_notification_callback(request):
+    try:
+        data = json.loads(request.body)
+        transaction_id = data['transactionId']
+        status = data['status']
+        category = data['category']
+        provider = data['provider']
+
+        if status == 'Success' and category == 'MobileCheckout':
+            payment = get_object_or_404(LandTransferPayment, transaction_id=transaction_id)
+            payment.status = status
+            payment.payment_mode = provider
+            payment.save()
+            return
+
+        elif status == 'Success' and category == 'MobileC2B':
+            payment = get_object_or_404(LandTransferPayment, transaction_id=transaction_id)
+            payment.status = status
+            payment.payment_mode = provider
+            payment.save()
+            return
+        else:
+            print 'error occurred'
+            return
+    except KeyError, e:
+         print 'error occurred', str(e)
+
+
+
+
+
+
+
+
+
