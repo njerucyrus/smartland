@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="col col-md-3"></div>
+    <div class="col col-md-6">
+        {% if lands %}
+
+            <table class="table table-responsive" border="2px">
+                <tr>
+                    <td>Title Deed</td>
+                    <td>Map Sheet</td>
+                    <td>Size</td>
+                    <td>Location</td>
+                    <td>Price</td>
+                    <td>Link</td>
+                </tr>
+                {% for land in lands %}
+                    <tr>
+                        <td>{{ land.title_deed }}</td>
+                        <td>{{ land.map_sheet }}</td>
+                        <td>{{ land.size }}</td>
+                        <td>{{ land.location }}</td>
+                        <td>{{ land.land_value }}</td>
+                        <td><a href="{% url 'land:purchase' pk=land.pk %}">Purchase Now</a></td>
+                    </tr>
+
+                {% endfor %}
+
+
+            </table>
+        {% else %}
+            <div class="alert alert-danger" role="alert">
+                <strong>No lands Available for sale</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

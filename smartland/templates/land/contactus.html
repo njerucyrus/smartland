@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="col col-md-3"></div>
+    <div class="col col-md-6">
+        {% if success_message %}
+
+            <div class="alert alert-success" role="alert">
+                <strong>{{ success_message }}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+        {% else %}
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ contact_form | crispy }}
+            <input type="submit" value="Submit" class="btn btn-primary btn-raised">
+        </form>
+    {% endif  %}
+    </div>
+{% endblock %}

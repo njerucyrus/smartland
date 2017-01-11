@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="col col-md-3"></div>
+    <div class="col col-md-6">
+        <div class="card card-body">
+
+            {% if success_message %}
+                <strong> {{ success_message }} <a href="{% url 'land:login' %}"> click here to Sign In</a></strong>
+                </div>
+                <div>
+            {% else %}
+                <form action="" method="post" style="padding: 2px; margin: 4px;">
+                    {% csrf_token %}
+                    {{ profile_form | crispy }}
+                    {{ signup_form | crispy }}
+                    <input type="submit" value="Sign Up" class="btn btn-success btn-raised">
+                </form>
+            {% endif %}
+            </div>
+    </div>
+{% endblock %}

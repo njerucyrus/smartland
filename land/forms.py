@@ -36,7 +36,7 @@ class LandRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = Land
-        exclude = ('user', )
+        exclude = ('user', 'on_sale', 'fee_paid', )
 
 
 class LandTransferForm(forms.Form):
@@ -57,9 +57,25 @@ class LandTransferForm(forms.Form):
 
 class LandPurchaseForm(forms.Form):
     title_deed = forms.CharField(max_length=32, )
-    phone_number = forms.CharField(max_length=13, )
-    email = forms.EmailField()
+    phone_number = forms.CharField(max_length=10, widget=forms.TextInput(
+        attrs={'placeholder': '07XX XXX XXX'}
+    ))
+    email = forms.EmailField(widget=forms.EmailInput(
+        attrs={'placeholder': 'Your Paypal Email Address'}
+    ))
     deposit = forms.DecimalField(max_digits=10, decimal_places=2)
+
+
+class ContactForm(forms.Form):
+    first_name = forms.CharField(max_length=32)
+    last_name = forms.CharField(max_length=32)
+    phone_number = forms.CharField(max_length=10, widget=forms.TextInput(
+        attrs={'id': 'phone_number_id', 'placeholder': '07 XX XXX XXX'}
+    ))
+    email = forms.EmailField()
+    message = forms.CharField(max_length=140, widget=forms.Textarea(
+        attrs={'id': 'message_id', 'placeholder': 'Your message here ....'}
+    ))
 
 
 

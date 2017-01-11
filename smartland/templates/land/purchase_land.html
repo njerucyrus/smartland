@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="col col-md-3"></div>
+
+    <div class="col col-md-6">
+    {% if success_message %}
+        <div class="alert alert-success" role="alert">
+            <strong>{{ success_message }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+     {% elif error %}
+        <div class="alert alert-danger" role="alert">
+            <strong>{{ error }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+    {% else %}
+    <h4><strong>Make Land Deposit Payment using PayPal by filling the form below.</strong></h4>
+
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ purchase_form | crispy }}
+            <input type="submit" value="purchase" class="btn btn-primary btn-raised">
+        </form>
+    {% endif %}
+    </div>
+{% endblock %}

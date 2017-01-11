@@ -41,6 +41,8 @@ INSTALLED_APPS = (
     'land',
     'payments',
     'api',
+    'crispy_forms',
+    'paypal.standard.ipn',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -86,6 +88,18 @@ DATABASES = {
 }
 
 
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'django_db',
+#         'USER': 'root',
+#         'PASSWORD': '',
+#         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+#         'PORT': '3306',
+#     }
+# }
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
@@ -103,7 +117,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media_files/')
+
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static_root')
+
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'static_files'),
+)
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
 
 # AT credentials
 SAND_BOX = True
@@ -111,6 +139,11 @@ if SAND_BOX:
     USERNAME = 'njerucyrus123'
     API_KEY = ''
     PRODUCT_NAME = 'smartland'
+
+
+USERNAME = 'njerucyrus'
+
+API_KEY = ''
 
 PRODUCT_NAME = 'Hudutech'
 

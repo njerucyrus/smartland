@@ -10,7 +10,19 @@ class LandUserProfileAdmin(admin.ModelAdmin):
 
 
 class LandAdmin(admin.ModelAdmin):
-    list_display = ['user', 'title_deed', 'map_sheet', 'location', 'size', 'land_value', 'on_sale', 'description']
+    list_display = [
+        'user',
+        'title_deed',
+        'map_sheet',
+        'location',
+        'size',
+        'land_value',
+        'on_sale',
+        'photo',
+        'description',
+        'fee_paid',
+        'purchased',
+    ]
 
     class Meta:
         model = Land
@@ -27,7 +39,45 @@ class LandTransfersAdmin(admin.ModelAdmin):
         'date_transferred'
     ]
 
+    class Meta:
+        model = LandTransfers
+
+
+class LandPurchasesAdmin(admin.ModelAdmin):
+    list_display = [
+        'land',
+        'owner',
+        'buyer',
+        'deposit',
+        'phone_number',
+        'email',
+        'approved',
+        'rejected',
+        'date'
+    ]
+
+    class Meta:
+        model = LandPurchases
+
+
+class ContactUsAdmin(admin.ModelAdmin):
+    list_display = ['first_name', 'last_name', 'phone_number', 'email', 'message']
+
+    class Meta:
+        model = ContactUs
+
+
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ['user', 'message_from', 'message', 'read', 'date']
+
+    class Meta:
+        model = Notification
+
 
 admin.site.register(LandUserProfile, LandUserProfileAdmin)
 admin.site.register(Land, LandAdmin)
 admin.site.register(LandTransfers, LandTransfersAdmin)
+admin.site.register(LandPurchases, LandPurchasesAdmin)
+admin.site.register(ContactUs, ContactUsAdmin)
+admin.site.register(Notification, NotificationAdmin)
+

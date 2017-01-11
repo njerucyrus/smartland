@@ -40,6 +40,7 @@ class LandPurchasePaymentAdmin(admin.ModelAdmin):
         'title_deed',
         'purchased_size',
         'payment_mode',
+        'buyer_email',
         'amount',
         'status',
         'date'

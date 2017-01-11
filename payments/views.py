@@ -49,6 +49,8 @@ def land_transfer_payment(request, pk=None):
                         amount=amount,
                     )
                     payment.save()
+                    land.fee_paid = True
+                    land.save()
 
                     """ end of sandbox checkout code """
                 else:
@@ -70,8 +72,10 @@ def land_transfer_payment(request, pk=None):
                         amount=amount,
                     )
                     payment.save()
+                    land.fee_paid = True
+                    land.save()
                     success_message = 'Payment Initiated successfully Check your phone to complete the payment'
-                    return render(request, 'payment_app_templates/transfer_payment.html',
+                    return render(request, 'payments/transfer_payment.html',
                                   {'success_message': success_message},
                                   )
 
@@ -80,14 +84,14 @@ def land_transfer_payment(request, pk=None):
                 print str(e)
 
                 return render(request,
-                              'payment_app_templates/transfer_payment.html',
+                              'payments/transfer_payment.html',
                               {'err_message': err_message},
                               )
     else:
         payment_form = LandTransferFeeForm()
     return render(
         request,
-        'payment_app_templates/transfer_payment.html',
+        'payments/transfer_payment.html',
         {'payment_form': payment_form}
     )
 
@@ -119,7 +123,7 @@ def mpesa_notification_callback(request):
             print 'error occurred'
             return
     except KeyError, e:
-         print 'error occurred', str(e)
+        print 'error occurred', str(e)
 
 
 

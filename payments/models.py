@@ -34,6 +34,7 @@ class LandPurchasePayment(models.Model):
     title_deed = models.CharField(max_length=32, )
     purchased_size = models.FloatField()
     payment_mode = models.CharField(max_length=20, )
+    buyer_email = models.EmailField()
     amount = models.FloatField()
     status = models.CharField(max_length=32, )
     date = models.DateTimeField(auto_now_add=True)

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="col col-md-8" style="margin: 15px;">
+        <table class="table table-responsive" border="1px;">
+            <tr style="color: red; font-weight: bold">
+                <td>Title Deed</td>
+                <td>Map Sheet Number</td>
+                <td>Buyer Username</td>
+                <td>Buyer Phone Number</td>
+                <td>Buyer Email</td>
+                <td>Deposited Amount</td>
+                <td>Date Purchased</td>
+                <td>Action</td>
+            </tr>
+
+            {% for land in lands_bought %}
+                <tr>
+                <td>{{ land.land.title_deed }}</td>
+                <td>{{ land.land.map_sheet }}</td>
+                <td>{{ land.land.user.user.username }}</td>
+                <td>{{ land.land.user.phone_number }}</td>
+                <td>{{ land.email }}</td>
+                <td>{{ land.deposit }}</td>
+                <td>{{ land.date }}</td>
+                <td>
+                  <td> <a href="{% url 'land:approve' title_deed=land.land.title_deed %}" class="btn btn-success btn-raised
+                  {% if land.approved %} disabled {% endif %}">Accept & Approve Purchase</a></td>
+                  <td><a href="{%  url 'land:reject' title_deed=land.land.title_deed %}" class="btn btn-danger btn-raised
+                  {% if not land.approved %} disabled {% endif %}">Reject& Refund</a></td>
+
+                </td>
+                </tr>
+
+            {% endfor %}
+
+        </table>
+    </div>
+
+{% endblock %}
