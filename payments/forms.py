@@ -8,7 +8,7 @@ class LandTransferFeeForm(forms.Form):
         attrs={'id': 'phone_number_id', 'placeholder': '07XX XXX XXX', }
     ))
     size = forms.FloatField()
-    amount = forms.FloatField()
+    amount = forms.FloatField(disabled=True)
 
 
 class LandPurchasePayment(forms.Form):

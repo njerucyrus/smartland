@@ -2,14 +2,14 @@ from django.db import models
 
 
 class LandTransferFee(models.Model):
-    land_size = models.FloatField()
+    # land_size = models.FloatField()
     fee_charged = models.FloatField()
 
     class Meta:
         verbose_name_plural = 'LandTransferFee'
 
     def __unicode__(self):
-        return "{0} hectares @ Ksh {1} fee".format(str(self.land_size), str(self.fee_charged))
+        return "Ksh {0}".format(str(self.fee_charged))
 
 
 class LandTransferPayment(models.Model):
@@ -44,4 +44,3 @@ class LandPurchasePayment(models.Model):
 
     def __unicode__(self):
         return self.transaction_id
-

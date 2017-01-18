@@ -36,7 +36,7 @@ class LandRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = Land
-        exclude = ('user', 'on_sale', 'fee_paid', )
+        exclude = ('user', 'purchased', 'fee_paid', )
 
 
 class LandTransferForm(forms.Form):
@@ -56,14 +56,14 @@ class LandTransferForm(forms.Form):
 
 
 class LandPurchaseForm(forms.Form):
-    title_deed = forms.CharField(max_length=32, )
+    title_deed = forms.CharField(max_length=32, disabled=True)
     phone_number = forms.CharField(max_length=10, widget=forms.TextInput(
         attrs={'placeholder': '07XX XXX XXX'}
     ))
     email = forms.EmailField(widget=forms.EmailInput(
         attrs={'placeholder': 'Your Paypal Email Address'}
     ))
-    deposit = forms.DecimalField(max_digits=10, decimal_places=2)
+    deposit = forms.DecimalField(max_digits=10, decimal_places=2, disabled=True)
 
 
 class ContactForm(forms.Form):
@@ -77,6 +77,21 @@ class ContactForm(forms.Form):
         attrs={'id': 'message_id', 'placeholder': 'Your message here ....'}
     ))
 
+
+class SearchLandForm(forms.Form):
+    minimum_price = forms.FloatField(widget=forms.NumberInput(
+        attrs={'id': 'minimum_price_id',  'placeholder': 'Enter minimum price'},
+    ))
+    maximum_price = forms.FloatField(widget=forms.NumberInput(
+        attrs={'id': 'maximum_price_id',  'placeholder': 'Enter maximum price'},
+    ))
+    land_size = forms.FloatField(widget=forms.NumberInput(
+        attrs={'id': 'land_size_id', 'placeholder': 'Enter Land Size', }
+    ))
+
+    land_location = forms.CharField(max_length=32, widget=forms.TextInput(
+        attrs={'id': 'land_location_id', 'placeholder': 'Enter location to search', }
+    ))
 
 
 

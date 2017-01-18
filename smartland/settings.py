@@ -26,7 +26,7 @@ SECRET_KEY = 'cff&mf*zt#6^*xm1=6r_#-xm&(88!g2bq_f2158%ziatvq1pne'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'land',
     'payments',
     'api',
+    'bootstrap3',
     'crispy_forms',
     'paypal.standard.ipn',
 )
@@ -80,25 +81,24 @@ WSGI_APPLICATION = 'smartland.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
-
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'django_db',
-#         'USER': 'root',
-#         'PASSWORD': '',
-#         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
-#         'PORT': '3306',
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #     }
 # }
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'smartland_db',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        'PORT': '3306',
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
@@ -134,19 +134,27 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 
 # AT credentials
+
 SAND_BOX = True
 if SAND_BOX:
+
     USERNAME = 'njerucyrus123'
+
+    API_KEY = 'ff899257e3379a6f1d2cd734f7531ab7e1db7af7a872bb6e4a0255cfdba7b0cd'
+
+    PRODUCT_NAME = 'SmartLand'
+
+    CURRENCY_CODE = 'KES'
+
+    METADATA = {}
+
+else:
+    USERNAME = 'njerucyrus'
+
     API_KEY = ''
-    PRODUCT_NAME = 'smartland'
 
+    PRODUCT_NAME = 'Hudutech'
 
-USERNAME = 'njerucyrus'
+    CURRENCY_CODE = 'KES'
 
-API_KEY = ''
-
-PRODUCT_NAME = 'Hudutech'
-
-CURRENCY_CODE = 'KES'
-
-METADATA = {}
+    METADATA = {}

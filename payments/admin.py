@@ -8,7 +8,7 @@ from payments.models import (
 
 
 class LandTransferFeeAdmin(admin.ModelAdmin):
-    list_display = ['land_size', 'fee_charged']
+    list_display = ['fee_charged']
 
     class Meta:
         model = LandTransferFee

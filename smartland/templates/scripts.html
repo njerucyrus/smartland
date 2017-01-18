@@ -1,0 +1,12 @@
+{% load staticfiles %}
+
+<script src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %} "></script>
+<!--material js-->
+<script src="{% static 'material/js/material.min.js' %}"></script>
+<script src="{% static 'material/js/ripples.min.js' %}"></script>
+<script>
+    $(function () {
+        $.material.init();
+    });
+</script>

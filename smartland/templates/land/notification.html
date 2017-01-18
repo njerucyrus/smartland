@@ -1,22 +1,25 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<div class="col col-md-2"></div>
-<div class="col col-md-8">
-
-     <div>
-       {% for n in notification %}
-      <div class="alert alert-primary alert-dismissable">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true" style="color: white!important; height: 65px!important;">&times;</span>
-        </button>
-       {{ n.message }}<br>
-        </div>
 
 
-      {% endfor %}
-      </div>
-
-</div>
+    <div class="col col-md-10">
+        {% if not notification %}
+            <div class="alert alert-info alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <p>You have no notifications</p>
+            </div>
+        {% else %}
+            {% for n in notification %}
+                <div class="alert alert-primary alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true" style="color: white!important; height: 65px!important;">&times;</span>
+                    </button>
+                    {{ n.message }}<br>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
 
 {% endblock %}

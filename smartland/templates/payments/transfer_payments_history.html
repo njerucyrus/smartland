@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div>
+<table class="table table-responsive">
+    <thead>
+    <th>#REFNO</th>
+    <th>TRANSACTION ID</th>
+    <th>LAND TITLE DEED</th>
+    <th>TRANSFERRED SIZE</th>
+    <th>PHONE NUMBER</th>
+    <th>PAYMENT MODE</th>
+    <th>AMOUNT PAID (KSH)</th>
+    <th>TRANSACTION DATE</th>
+    </thead>
+    {% for payment in payments %}
+    <tr>
+        <td>{{forloop.counter }}</td>
+        <td>{{ payment.transaction_id }}</td>
+        <td>{{ payment.title_deed }}</td>
+        <td>{{ payment.transferred_size }}</td>
+        <td>{{ payment.payment_mode }}</td>
+        <td>{{ payment.amount }}</td>
+        <td>{{ payment.date }}</td>
+        <td></td>
+    </tr>
+    {% endfor %}
+</table>
+</div>
+{% endblock %}

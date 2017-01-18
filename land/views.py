@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db import IntegrityError
+from django.db.models import Q
 
 from land.forms import (
     LoginForm,
@@ -13,6 +14,7 @@ from land.forms import (
     LandRegistrationForm,
     LandTransferForm,
     LandPurchaseForm,
+    SearchLandForm,
     ContactForm,
 )
 from land.models import (
@@ -33,6 +35,10 @@ from random import randint
 
 def login_user(request):
     next_url = request.GET.get('next', '')
+    #check if user is authenticated and redirect user to root page
+    if request.user.is_authenticated():
+        return HttpResponseRedirect('/')
+
     if request.method == 'POST':
         login_form = LoginForm(request.POST)
         if login_form.is_valid():
@@ -49,12 +55,8 @@ def login_user(request):
                         return HttpResponseRedirect(next_url)
             else:
                 err_message = 'Wrong username / password'
-
                 login_form = LoginForm()
-                return render(request,
-                              'land/login.html',
-                              {'login_form': login_form, 'err_message': err_message, }
-                )
+                return render(request, 'land/login.html', {'login_form': login_form, 'err_message': err_message, })
     else:
         login_form = LoginForm()
     return render(request, 'land/login.html', {'login_form': login_form, })
@@ -130,7 +132,7 @@ def register_land(request):
         land_form = LandRegistrationForm()
     return render(request, 'land/register_land.html', {'land_form': land_form, })
 
-
+@login_required(login_url='/login/')
 def transfer_land(request, pk=None):
     land = get_object_or_404(Land, pk=pk)
     title_deed = str(land.title_deed)
@@ -180,14 +182,27 @@ def transfer_land(request, pk=None):
 @login_required(login_url='/login/')
 def my_land_list(request):
     user = get_object_or_404(User, username=request.user)
+    print user
     profile = get_object_or_404(LandUserProfile, user=user)
+    print profile
     lands = Land.objects.filter(user=profile, purchased=False)
+    print lands
     return render(request, 'land/my_land_list.html', {'lands': lands}, )
+
+
+def land_details(request, title_deed=None):
+    try:
+        land = Land.objects.get(title_deed=title_deed)
+        return render(request, 'land/land_details.html', {'land': land, })
+    except Land.DoesNotExist:
+        message = 'No land that matches the supplied title deed'
+        return render(request, 'land/land_details.html', {'error': message})
 
 
 @login_required(login_url='/login/')
 def land_on_sale(request):
-    lands = Land.objects.filter(on_sale=True)
+    user = get_object_or_404(LandUserProfile, user=get_object_or_404(User, username=str(request.user)))
+    lands = Land.objects.filter(on_sale=True).exclude(Q(user=user))
     return render(request, 'land/lands_onsale.html', {'lands': lands, })
 
 
@@ -325,3 +340,24 @@ def reject_purchased_land(request, title_deed):
     # send sms to the buyer to notify him land was approved --pending
 
     return render(request, 'land/reject_success.html', {'success_message': message, })
+
+
+@login_required(login_url='/login/')
+def search_land_onsale(request):
+
+    if request.method == 'POST':
+        search_form = SearchLandForm(request.POST, )
+        if search_form.is_valid():
+            cd = search_form.cleaned_data
+            min_price = cd['minimum_price']
+            max_price = cd['maximum_price']
+            location = cd['land_location']
+            land_size = cd['land_size']
+
+            lands = Land.objects.filter(
+                land_value__range=(min_price, max_price),
+                location=location, size=land_size, on_sale=True
+            )
+            return render(request, 'land/search_land_onsale.html', {'lands': lands, })
+    else:
+        return render(request, 'land/search_land_onsale.html', {'search_form': SearchLandForm(), })

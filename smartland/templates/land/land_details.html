@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="col col-md-8">
+
+        <div class="panel panel-inverse">
+            <p class="panel-heading" style="padding-left: 15px;">More Details About the Land</p><br>
+
+            <p class="panel" style="margin-left: 4px!important;">
+                Location {{ land.description }}<br>
+                Title Deed Number: {{ land.title_deed }}<br>
+                Map Sheet Number: {{ land.map_sheet }}<br>
+                Land Size: {{ land.size }} acres<br>
+                {% if land.on_sale %}Land Price: Ksh {{ land.land_value }}{% endif %}
+            </p>
+
+            <p class="" style="padding: 15px;">Owner Details</p>
+
+            <p class="panel panel-info">
+               Full Name:  {{ land.user.user.first_name }} &nbsp; {{ land.user.user.last_name }}<br>
+            National ID: {{ land.user.id_no }}<br>
+            Contact(mobile number): {{ land.user.phone_number }}<br>
+            Email: {{ land.user.user.email }}<br>
+            </p>
+        </div>
+
+    </div>
+
+{% endblock %}

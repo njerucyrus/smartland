@@ -1,0 +1,66 @@
+{% load staticfiles %}
+
+<body>
+{% block sidebar %}
+<div id="navbar-wrapper" class="col col-md-12">
+    <div id="wrapper">
+        <div id="sidebar-wrapper">
+            <aside id="sidebar">
+                <ul id="sidemenu" class="sidebar-nav">
+                    <li>
+                        <a href="{% url 'land:index' %}">
+                            <span class="sidebar-icon"><i class="fa fa-dashboard"></i></span>
+                            <span class="sidebar-title">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="accordion-toggle collapsed toggle-switch" data-toggle="collapse" href="#submenu-2">
+                            <span class="sidebar-icon"><i class="fa fa-users"></i></span>
+                            <span class="sidebar-title">Management</span>
+                            <b class="caret"></b>
+                        </a>
+                        <ul id="submenu-2" class="panel-collapse collapse panel-switch" role="menu">
+                            <li><a href="{% url 'land:register_land' %}"><i class="fa fa-plus-circle"></i>Register New Land</a></li>
+                            <li><a href="{% url 'land:mylands' %}"><i class="fa fa-exchange"></i>Transfer Land</a></li>
+                            <li><a href="{% url 'land:mylands' %}"><i class="fa fa-eye"></i>View My Lands</a></li>
+                            <li><a href="#"><i class="fa fa-user-circle"></i>My Account</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a class="accordion-toggle collapsed toggle-switch" data-toggle="collapse" href="#submenu-3">
+                            <span class="sidebar-icon"><i class="fa fa-newspaper-o"></i></span>
+                            <span class="sidebar-title">Payments</span>
+                            <b class="caret"></b>
+                        </a>
+                        <ul id="submenu-3" class="panel-collapse collapse panel-switch" role="menu">
+                            <li><a href="{% url 'land:mylands' %}"><i class="fa fa-caret-right"></i>Pay Land Transfers Fee</a></li>
+                            <li><a href="{% url 'payments:history' %}"><i class="fa fa-caret-right"></i>View Payment History</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{% url 'land:notification' user=request.user %}">
+                            <span class="sidebar-icon"><i class="fa fa-bell-o"></i></span>
+                            <span class="sidebar-title">Notifications</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </aside>
+        </div>
+        <main id="page-content-wrapper" role="main">
+        </main>
+    </div>
+</div>
+<script src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %} "></script>
+<!--material js-->
+<script src="{% static 'material/js/material.min.js' %}"></script>
+<script src="{% static 'material/js/ripples.min.js' %}"></script>
+<script>
+    $(function () {
+        $.material.init();
+    });
+</script>
+
+</body>
+{% endblock %}

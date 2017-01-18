@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 class LandUserProfile(models.Model):
     user = models.OneToOneField(User, )
-    id_no = models.PositiveIntegerField(unique=True, db_index=True)
+    id_no = models.PositiveIntegerField(verbose_name="National ID Number", unique=True, db_index=True)
     phone_number = models.CharField(max_length=13, unique=True)
 
     class Meta:
@@ -23,11 +23,11 @@ class Land(models.Model):
     location = models.CharField(max_length=128, )
     size = models.FloatField()
     photo = models.ImageField(upload_to='land/images/')
-    land_value = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    land_value = models.DecimalField(verbose_name="Land Value (Ksh)", max_digits=10, decimal_places=2, null=True, blank=True)
     description = models.TextField(max_length=140)
     on_sale = models.BooleanField(default=False)
     fee_paid = models.BooleanField(default=False)
-    purchased = models.BooleanField(default=True)
+    purchased = models.BooleanField(default=False)
     date_registered = models.DateTimeField(auto_now_add=True)
 
     class Meta:

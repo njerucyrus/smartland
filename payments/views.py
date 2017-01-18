@@ -1,24 +1,29 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.conf import settings
-from land.models import Land
+from land.models import Land, LandUserProfile
 from payments.forms import LandTransferFeeForm
 from payments.AfricasTalkingGateway import AfricasTalkingGateway, AfricasTalkingGatewayException
-from payments.models import LandTransferPayment
+from payments.models import LandTransferPayment, LandTransferFee
+from land.phoneNumber import CleanPhoneNumber
 import json
 
 
 def land_transfer_payment(request, pk=None):
     land = get_object_or_404(Land, pk=pk)
     title_deed = land.title_deed
-
+    transfer_fee_amt = LandTransferFee.objects.all()[0]
+    fee = float(transfer_fee_amt.fee_charged)
+    form_initial = {'amount': fee, }
     if request.method == 'POST':
-        payment_form = LandTransferFeeForm(request.POST)
+        payment_form = LandTransferFeeForm(request.POST, initial=form_initial)
 
         if payment_form.is_valid():
             cd = payment_form.cleaned_data
-            phone_number = cd['phone_number']
+            phone_number = CleanPhoneNumber(cd['phone_number']).validate_phone_number()
             amount = float(cd['amount'])
             size = float(cd['size'])
 
@@ -31,7 +36,7 @@ def land_transfer_payment(request, pk=None):
                 metadata = settings.METADATA
                 """  this code will be inactive in production """
                 if settings.SAND_BOX:
-                    gateway = AfricasTalkingGateway(username, api_key)
+                    gateway = AfricasTalkingGateway(username, api_key, "sandbox")
                     transaction_id = gateway.initiateMobilePaymentCheckout(
                         product_name,
                         phone_number,
@@ -54,7 +59,7 @@ def land_transfer_payment(request, pk=None):
 
                     """ end of sandbox checkout code """
                 else:
-                    gateway = AfricasTalkingGateway(username, api_key, "sandbox")
+                    gateway = AfricasTalkingGateway(username, api_key)
                     transaction_id = gateway.initiateMobilePaymentCheckout(
                         product_name,
                         phone_number,
@@ -62,7 +67,7 @@ def land_transfer_payment(request, pk=None):
                         amount,
                         metadata
                     )
-                    #create payment model instance
+                    # create payment model instance
                     payment = LandTransferPayment.objects.create(
                         transaction_id=transaction_id,
                         title_deed=title_deed,
@@ -76,8 +81,7 @@ def land_transfer_payment(request, pk=None):
                     land.save()
                     success_message = 'Payment Initiated successfully Check your phone to complete the payment'
                     return render(request, 'payments/transfer_payment.html',
-                                  {'success_message': success_message},
-                                  )
+                                  {'success_message': success_message},)
 
             except AfricasTalkingGatewayException, e:
                 err_message = 'Error occurred please try again later'
@@ -86,14 +90,15 @@ def land_transfer_payment(request, pk=None):
                 return render(request,
                               'payments/transfer_payment.html',
                               {'err_message': err_message},
-                              )
+                )
     else:
-        payment_form = LandTransferFeeForm()
+        payment_form = LandTransferFeeForm(initial=form_initial)
     return render(
         request,
         'payments/transfer_payment.html',
         {'payment_form': payment_form}
     )
+
 
 
 @require_http_methods(['POST'])
@@ -105,25 +110,64 @@ def mpesa_notification_callback(request):
         status = data['status']
         category = data['category']
         provider = data['provider']
-
+        phone_number = CleanPhoneNumber(data['source']).validate_phone_number()
+        amount = data['value']
         if status == 'Success' and category == 'MobileCheckout':
             payment = get_object_or_404(LandTransferPayment, transaction_id=transaction_id)
             payment.status = status
             payment.payment_mode = provider
             payment.save()
-            return
+            username = settings.USERNAME
+            api_key = settings.API_KEY
+            if settings.SAND_BOX:
+                # send confirmation message
+                gateway = AfricasTalkingGateway(username, api_key, 'sandbox')
+                message = "Land Transfer fee of {0} has been " \
+                          "received you can now transfer your land." \
+                          " Thank you for using SmartLand".format(amount,)
+                gateway.sendMessage(phone_number, message)
+
+            else:
+                gateway = AfricasTalkingGateway(username, api_key)
+                message = "Land Transfer fee of KSH {0} has been " \
+                          "received you can now transfer your land." \
+                          " Thank you for using SmartLand".format(amount,)
+                gateway.sendMessage(phone_number, message)
+
+            return HttpResponse('transaction completed successfully')
 
         elif status == 'Success' and category == 'MobileC2B':
             payment = get_object_or_404(LandTransferPayment, transaction_id=transaction_id)
             payment.status = status
             payment.payment_mode = provider
             payment.save()
-            return
+            return HttpResponse('transaction completed successfully')
         else:
             print 'error occurred'
-            return
-    except KeyError, e:
+            return HttpResponse('error occurred transaction not completed')
+    except (KeyError, AfricasTalkingGatewayException) as e:
         print 'error occurred', str(e)
+        return HttpResponse('error occurred transaction not completed')
+
+
+@login_required(login_url='/login/')
+@require_http_methods(['GET'])
+def transaction_history(request):
+    profile = get_object_or_404(
+        LandUserProfile,
+        user=User.objects.get(username=str(request.user))
+    )
+
+    transfer_payments = LandTransferPayment.objects.filter(
+        phone_number=str(profile.phone_number),
+        status='Success'
+    )
+    return render(
+        request,
+        'payments/transfer_payments_history.html',
+        {'payments': transfer_payments, }
+    )
+
 
 
 

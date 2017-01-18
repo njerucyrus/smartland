@@ -1,12 +1,9 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <div class="col col-md-6">
-
     <form action="" method="post">
         {% csrf_token %}
         {{ transfer_form | crispy }}
         <input type="submit" value="transfer land" class="btn btn-primary btn-raised">
     </form>
-    </div>
 {% endblock %}

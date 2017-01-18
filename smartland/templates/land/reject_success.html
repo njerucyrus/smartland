@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-    <div class="col col-md-6">
+    <div clas="col col-md-10">
     {% if success_message %}
         <div class="alert alert-danger" role="alert">
             <strong>{{ success_message }}</strong>
@@ -12,4 +11,5 @@
         </div>
     {% endif %}
     </div>
+
 {% endblock %}

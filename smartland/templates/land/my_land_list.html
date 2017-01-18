@@ -2,12 +2,9 @@
 
 
 {% block content %}
-
-    <div class="col col-md-3"></div>
-    <div class="col col-md-9" style="">
+    <div class="col col-md-10">
         {% for land in lands %}
-            <div class="col col-md-12">
-                <div class="panel panel-primary">
+                <div class="panel panel-inverse">
                     <div class="panel-heading">
                         SmartLand (Title Deed: {{ land.title_deed }} )
                     </div>
@@ -19,9 +16,12 @@
                     <div class="panel-footer">
                    <p>Land Size: ({{ land.size }} hectors)</p>
                     <p>Location: ({{ land.location }}) </p>
-                    <p>Description <a href="#" class="">Read More...</a> </p>
-                        <p>
-             <a href="{% url 'payments:transfer_payment' pk=land.pk %}" class="btn btn-primary btn-raised
+                        <p>Description
+                            <a href="{% url 'land:land_details' title_deed=land.title_deed %}" class="">
+                                Read More...</a>
+                        </p>
+                    <p>
+             <a href="{% url 'payments:transfer_payment' pk=land.pk %}" class="btn btn-inverse btn-raised
                          {% if land.fee_paid %} disabled {% endif %}" style="font-size: 14px!important;">Pay Land Transfer Fee</a>
 
                           <a href="{% url 'land:transfer_land' pk=land.pk %}" class="btn btn-danger btn-raised
@@ -30,38 +30,7 @@
                         </p>
                     </div>
                 </div>
-            </div>
 
         {% endfor %}
     </div>
-
-
-    {#        <table class="table table-responsive" border="2px">#}
-    {#            <tr>#}
-    {#                <td>#</td>#}
-    {#                <td>Title deed</td>#}
-    {#                <td>Map Sheet No</td>#}
-    {#                <td>Location</td>#}
-    {#                <td>Size</td>#}
-    {#                <td>Payment Link</td>#}
-    {#                <td>Transfer Link</td>#}
-    {#            </tr>#}
-    {#            {% for land in lands %}#}
-    {#                <tr>#}
-    {#                    <td>{{ forloop.counter }}</td>#}
-    {#                    <td>{{ land.title_deed }}</td>#}
-    {#                    <td>{{ land.map_sheet }}</td>#}
-    {#                    <td>{{ land.location }}</td>#}
-    {#                    <td>{{ land.size }}</td>#}
-    {##}
-    {#                    <td><a href="{% url 'payments:transfer_payment' pk=land.pk %}">Pay Land Transfer Fee</a></td>#}
-    {#                    {% if land.fee_paid %}#}
-    {#                        <td><a href="{% url 'land:transfer_land' pk=land.pk %}">Transfer Land To Someone Else</a></td>#}
-    {#                    {% endif %}#}
-    {#                </tr>#}
-    {##}
-    {#            {% endfor %}#}
-    {#        </table>#}
-    {#</div>#}
-
 {% endblock %}

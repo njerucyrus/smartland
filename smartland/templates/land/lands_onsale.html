@@ -1,40 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="col col-md-3"></div>
-    <div class="col col-md-6">
+<div class="col col-md-10">
         {% if lands %}
 
-            <table class="table table-responsive" border="2px">
+        <!---Search Land form Modal-->
+
+        <!--End of  Search Land form modal-->
+
+        <h1>Land Available For Sale</h1>
+        <p>
+            <a href="{% url 'land:search' %}" class="btn btn-inverse btn-raised pull-right "> Go to Land Finder</a></p>
+        <table class="table table-responsive" border="2px">
+            <tr>
+                <td>Title Deed</td>
+                <td>Map Sheet</td>
+                <td>Size</td>
+                <td>Location</td>
+                <td>Price</td>
+                <td>Link</td>
+                <td>Details Link</td>
+            </tr>
+            {% for land in lands %}
                 <tr>
-                    <td>Title Deed</td>
-                    <td>Map Sheet</td>
-                    <td>Size</td>
-                    <td>Location</td>
-                    <td>Price</td>
-                    <td>Link</td>
+                    <td>{{ land.title_deed }}</td>
+                    <td>{{ land.map_sheet }}</td>
+                    <td>{{ land.size }}</td>
+                    <td>{{ land.location }}</td>
+                    <td>{{ land.land_value }}</td>
+                    <td><a href="{% url 'land:purchase' pk=land.pk %}">Purchase Now</a></td>
+                    <td><a href="{% url 'land:landonsaledetail' title_deed=land.title_deed %}">More Details about this land</a></td>
                 </tr>
-                {% for land in lands %}
-                    <tr>
-                        <td>{{ land.title_deed }}</td>
-                        <td>{{ land.map_sheet }}</td>
-                        <td>{{ land.size }}</td>
-                        <td>{{ land.location }}</td>
-                        <td>{{ land.land_value }}</td>
-                        <td><a href="{% url 'land:purchase' pk=land.pk %}">Purchase Now</a></td>
-                    </tr>
-
-                {% endfor %}
-
-
+            {% endfor %}
             </table>
         {% else %}
             <div class="alert alert-danger" role="alert">
-                <strong>No lands Available for sale</strong>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
+             <strong>No lands Available for sale</strong>
             </div>
         {% endif %}
-    </div>
+</div>
 {% endblock %}

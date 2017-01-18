@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="col col-md-8" style="margin-right: 25px;">
+    {% if lands %}
+        {% for land in lands %}
+            {{ land.id }}
+        {% endfor %}
+    {% else %}
+        <form class="form-group" action="" method="post">
+            {% csrf_token %}
+            {{ search_form | crispy }}
+            <input type="submit" value="Search Land" class="btn btn-inverse btn-raised">
+        </form>
+    {% endif %}
+    </div>
+{% endblock %}
