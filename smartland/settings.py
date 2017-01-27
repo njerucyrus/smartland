@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'bootstrap3',
     'crispy_forms',
     'paypal.standard.ipn',
+    'gunicorn',
 )
 
 MIDDLEWARE_CLASSES = (
