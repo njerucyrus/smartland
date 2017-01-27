@@ -2,12 +2,13 @@
 {% load crispy_forms_tags %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>{% block title %} SmartLand  System {% endblock %}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {% include 'css.html' %}
+    {% include 'main_css.html' %}
     <style type="text/css">
         .profile-avatar{
              border-radius: 100%;
@@ -46,9 +47,12 @@
                 {% else %}
                     <form action="" method="post" style="padding: 2px; margin: 4px;">
                         {% csrf_token %}
-                        {{ profile_form | crispy }}
-                        {{ signup_form | crispy }}
+                        <table class="table table-responsive">
+                        {{ profile_form.as_table }}
+                        {{ signup_form.as_table }}
+                        </table>
                         <input type="submit" value="Sign Up" class="btn btn-inverse btn-raised">
+                       <p>Already have an account ? <a href="{% url 'land:login' %}">Sign in</a> </p>
                     </form>
                 {% endif %}
 
@@ -57,5 +61,5 @@
 </div>
 </div>
 </body>
-{% include 'scripts.html' %}
+{% include 'main_scripts.html' %}
 </html>

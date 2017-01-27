@@ -5,9 +5,9 @@ from django.contrib.auth.models import User
 from land.models import LandUserProfile, Land, LandTransfers
 
 
-class LoginForm(forms.Form):
-    username = forms.CharField(max_length=32, )
-    password = forms.CharField(max_length=32, widget=forms.PasswordInput)
+# class LoginForm(forms.Form):
+#     username = forms.CharField(max_length=32, )
+#     password = forms.CharField(max_length=32, widget=forms.PasswordInput)
 
 
 class UserRegistrationForm(forms.ModelForm):

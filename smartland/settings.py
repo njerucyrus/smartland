@@ -132,6 +132,11 @@ STATICFILES_DIRS = (
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
+# django paypal configurations
+PAYPAL_RECEIVER_EMAIL = 'njerucyrusdev@gmail.com'
+#turn this off when you go to live account
+PAYPAL_TEST = True
+
 
 # AT credentials
 

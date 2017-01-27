@@ -16,6 +16,7 @@
                     <div class="panel-footer">
                    <p>Land Size: ({{ land.size }} hectors)</p>
                     <p>Location: ({{ land.location }}) </p>
+                    <p>{% if land.title_deed_scan %}<a href="{{ land.title_deed_scan.url }}">TITLE DEED PDF SCAN LINK</a> {% endif %}</p>
                         <p>Description
                             <a href="{% url 'land:land_details' title_deed=land.title_deed %}" class="">
                                 Read More...</a>

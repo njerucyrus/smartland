@@ -2,13 +2,13 @@ from django.shortcuts import render, render_to_response, get_object_or_404
 from django.http.response import HttpResponseRedirect, HttpResponse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db import IntegrityError
 from django.db.models import Q
 
 from land.forms import (
-    LoginForm,
     UserRegistrationForm,
     LandUserProfileForm,
     LandRegistrationForm,
@@ -33,33 +33,35 @@ from land.phoneNumber import CleanPhoneNumber
 from random import randint
 
 
+@require_http_methods(['POST', 'GET'])
 def login_user(request):
     next_url = request.GET.get('next', '')
     #check if user is authenticated and redirect user to root page
     if request.user.is_authenticated():
-        return HttpResponseRedirect('/')
+            return HttpResponseRedirect('/')
+
+    # if not request.user.is_authenticated():
+    #         return HttpResponseRedirect('/login/')
 
     if request.method == 'POST':
-        login_form = LoginForm(request.POST)
-        if login_form.is_valid():
-            cd = login_form.cleaned_data
-            user = authenticate(username=cd['username'], password=cd['password'])
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        print 'username', username
+        print 'password', password
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
 
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-
-                    if next_url == '':
-                        return HttpResponseRedirect('/')
-                    elif next_url:
-                        return HttpResponseRedirect(next_url)
-            else:
-                err_message = 'Wrong username / password'
-                login_form = LoginForm()
-                return render(request, 'land/login.html', {'login_form': login_form, 'err_message': err_message, })
+                if next_url == '':
+                    return HttpResponseRedirect('/')
+                elif next_url:
+                    return HttpResponseRedirect(next_url)
+        else:
+            err_message = 'Wrong username / password'
+            return render(request, 'land/login.html', {'err_message': err_message, })
     else:
-        login_form = LoginForm()
-    return render(request, 'land/login.html', {'login_form': login_form, })
+        return render(request, 'land/login.html', )
 
 
 @login_required(login_url='/login/')
@@ -96,6 +98,16 @@ def signup(request):
                       'signup_form': signup_form,
                       'profile_form': profile_form
                   })
+
+
+@login_required(login_url='/login/')
+def my_profile(request):
+
+    profile = get_object_or_404(
+        LandUserProfile,
+        user=get_object_or_404(User, username=request.user)
+    )
+    return render(request, 'land/myprofile.html', {'profile': profile, })
 
 
 @login_required(login_url='/login/')
@@ -182,11 +194,9 @@ def transfer_land(request, pk=None):
 @login_required(login_url='/login/')
 def my_land_list(request):
     user = get_object_or_404(User, username=request.user)
-    print user
     profile = get_object_or_404(LandUserProfile, user=user)
-    print profile
     lands = Land.objects.filter(user=profile, purchased=False)
-    print lands
+
     return render(request, 'land/my_land_list.html', {'lands': lands}, )
 
 
@@ -217,6 +227,7 @@ def purchase_land(request, pk=None):
         purchase_form = LandPurchaseForm(request.POST, initial=initial)
 
         if purchase_form.is_valid():
+
             cd = purchase_form.cleaned_data
             phone_number = cd['phone_number']
             email = cd['email']
@@ -224,42 +235,49 @@ def purchase_land(request, pk=None):
             user = get_object_or_404(User, username=request.user)
             buyer = get_object_or_404(LandUserProfile, user=user)
             clean_phone_number = CleanPhoneNumber(phone_number).validate_phone_number()
-            try:
-                land_purchase = LandPurchases.objects.create(
-                    owner=land.user.user,
-                    land=land,
-                    buyer=buyer,
-                    email=email,
-                    phone_number=clean_phone_number,
-                    deposit=deposit,
-                )
+            # set session variables
+            request.session['buyer_phone_number'] = clean_phone_number
+            request.session['buyer_email'] = email
+            request.session['deposit_amount'] = float(deposit)
+            request.session['buyer_username'] = str(request.user)
+            request.session['seller_username'] = str(land.user.user.username)
+            request.session['title_deed'] = str(land.title_deed)
 
-                land_purchase.save()
-                land.on_sale = False
-                land.save()
-            except IntegrityError:
-                error_msg = 'Land Already Purchased by another user'
-                return render_to_response(
-                    'land/purchase_land.html',
-                    {'error': error_msg, }
-                )
-            # send notification to the land owner
-            message = 'The Land with title deed({0}), has been purchased by {1} on {2}, a deposit of Ksh ' \
-                      '{3} has been sent into your Paypal account.The buyers Phone number is {4}'.\
-                format(title_deed, request.user,  timezone.now(), deposit,  clean_phone_number)
+            return HttpResponseRedirect('/land-purchase-payment/')
+            # try:
+            #     land_purchase = LandPurchases.objects.create(
+            #         owner=land.user.user,
+            #         land=land,
+            #         buyer=buyer,
+            #         email=email,
+            #         phone_number=clean_phone_number,
+            #         deposit=deposit,
+            #     )
+            #
+            #     land_purchase.save()
+            #     land.on_sale = False
+            #     land.save()
+            # except IntegrityError, e:
+            #     error_msg = 'Land Already Purchased by another user', e
+            #     return render_to_response(
+            #         'land/purchase_land.html',
+            #         {'error': error_msg, }
+            #     )
+            # # send notification to the land owner
+            # message = 'The Land with title deed({0}), has been purchased by {1} on {2}, a deposit of Ksh ' \
+            #           '{3} has been sent into your Paypal account.The buyers Phone number is {4}'.\
+            #     format(title_deed, request.user,  timezone.now(), deposit,  clean_phone_number)
+            #
+            # notification = Notification.objects.create(
+            #     user=land.user.user,
+            #     message_from=str(request.user),
+            #     message=message,
+            # )
+            # notification.save()
+            #
+            # success_message = 'You have successfully purchased the land title deed {0}'. \
+            #     format(land.title_deed)
 
-            notification = Notification.objects.create(
-                user=land.user.user,
-                message_from=str(request.user),
-                message=message,
-            )
-            notification.save()
-
-            success_message = 'You have successfully purchased the land title deed {0}'. \
-                format(land.title_deed)
-            return render(request, 'land/purchase_land.html', {
-                'success_message': success_message,
-            })
     else:
         purchase_form = LandPurchaseForm(initial=initial)
     return render(request, 'land/purchase_land.html', {
@@ -344,7 +362,6 @@ def reject_purchased_land(request, title_deed):
 
 @login_required(login_url='/login/')
 def search_land_onsale(request):
-
     if request.method == 'POST':
         search_form = SearchLandForm(request.POST, )
         if search_form.is_valid():
@@ -361,3 +378,5 @@ def search_land_onsale(request):
             return render(request, 'land/search_land_onsale.html', {'lands': lands, })
     else:
         return render(request, 'land/search_land_onsale.html', {'search_form': SearchLandForm(), })
+
+

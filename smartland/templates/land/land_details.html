@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 
 {% block content %}
     <div class="col col-md-8">
@@ -15,7 +16,15 @@
             </p>
 
             <p class="" style="padding: 15px;">Owner Details</p>
-
+            <div class="profile-avartar ">
+                        {% if land.user.profile_image %}
+                            <img src="{{ land.user.profile_image.url }}" alt="{{ profile.user.username }}"
+                                 class="profile-avartar">
+                        {% else %}
+                            <img src="{% static 'img/no-profile-image.jpg' %}" class="profile-avartar">
+                        {% endif %}
+             </div>
+           <br>
             <p class="panel panel-info">
                Full Name:  {{ land.user.user.first_name }} &nbsp; {{ land.user.user.last_name }}<br>
             National ID: {{ land.user.id_no }}<br>

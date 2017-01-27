@@ -8,6 +8,7 @@ class LandUserProfile(models.Model):
     user = models.OneToOneField(User, )
     id_no = models.PositiveIntegerField(verbose_name="National ID Number", unique=True, db_index=True)
     phone_number = models.CharField(max_length=13, unique=True)
+    profile_image = models.ImageField(blank=True, null=True, upload_to='land/images/profile/')
 
     class Meta:
         verbose_name_plural = 'LandUserProfiles'
@@ -22,7 +23,8 @@ class Land(models.Model):
     map_sheet = models.CharField(max_length=32, )
     location = models.CharField(max_length=128, )
     size = models.FloatField()
-    photo = models.ImageField(upload_to='land/images/')
+    photo = models.ImageField(upload_to='land/images/',)
+    title_deed_scan = models.FileField(upload_to='land/files/')
     land_value = models.DecimalField(verbose_name="Land Value (Ksh)", max_digits=10, decimal_places=2, null=True, blank=True)
     description = models.TextField(max_length=140)
     on_sale = models.BooleanField(default=False)

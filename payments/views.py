@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, HttpResponse
+from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -9,6 +10,8 @@ from payments.forms import LandTransferFeeForm
 from payments.AfricasTalkingGateway import AfricasTalkingGateway, AfricasTalkingGatewayException
 from payments.models import LandTransferPayment, LandTransferFee
 from land.phoneNumber import CleanPhoneNumber
+from paypal.standard.forms import PayPalPaymentsForm
+from decimal import Decimal
 import json
 
 
@@ -81,7 +84,7 @@ def land_transfer_payment(request, pk=None):
                     land.save()
                     success_message = 'Payment Initiated successfully Check your phone to complete the payment'
                     return render(request, 'payments/transfer_payment.html',
-                                  {'success_message': success_message},)
+                                  {'success_message': success_message}, )
 
             except AfricasTalkingGatewayException, e:
                 err_message = 'Error occurred please try again later'
@@ -98,7 +101,6 @@ def land_transfer_payment(request, pk=None):
         'payments/transfer_payment.html',
         {'payment_form': payment_form}
     )
-
 
 
 @require_http_methods(['POST'])
@@ -124,14 +126,14 @@ def mpesa_notification_callback(request):
                 gateway = AfricasTalkingGateway(username, api_key, 'sandbox')
                 message = "Land Transfer fee of {0} has been " \
                           "received you can now transfer your land." \
-                          " Thank you for using SmartLand".format(amount,)
+                          " Thank you for using SmartLand".format(amount, )
                 gateway.sendMessage(phone_number, message)
 
             else:
                 gateway = AfricasTalkingGateway(username, api_key)
                 message = "Land Transfer fee of KSH {0} has been " \
                           "received you can now transfer your land." \
-                          " Thank you for using SmartLand".format(amount,)
+                          " Thank you for using SmartLand".format(amount, )
                 gateway.sendMessage(phone_number, message)
 
             return HttpResponse('transaction completed successfully')
@@ -169,6 +171,51 @@ def transaction_history(request):
     )
 
 
+@csrf_exempt
+def land_payment_process(request):
+    title_deed = request.session.get('title_deed')
+    land = get_object_or_404(Land, title_deed=title_deed)
+    buyer_username = request.session.get('buyer_username')
+    seller_username = request.session.get('seller_username')
+    buyer = get_object_or_404(
+        LandUserProfile,
+        user=get_object_or_404(User, username=buyer_username)
+    )
+
+    seller = get_object_or_404(
+        LandUserProfile,
+        user=get_object_or_404(User, username=seller_username)
+    )
+    amount = request.session.get('deposit_amount')
+    host = request.get_host()
+    paypal_dict = {
+        'business': settings.PAYPAL_RECEIVER_EMAIL,
+        'amount': '%.2f' % amount.quantize(
+            Decimal('.01')),
+        'item_name': 'Land  {}'.format(land.title_deed),
+        'invoice': str(land.title_deed),
+        'currency_code': 'USD',
+        'notify_url': 'http://{}{}'.format(host,
+                                           reverse('paypal-ipn')),
+        'return_url': 'http://{}{}'.format(host,
+                                           reverse('payments:done')),
+        'cancel_return': 'http://{}{}'.format(host,
+                                              reverse('payments:canceled')),
+    }
+    form = PayPalPaymentsForm(initial=paypal_dict)
+    return render(request,
+                  'payments/process.html',
+                  {'land': land, 'form': form})
+
+
+@csrf_exempt
+def payment_done(request):
+    return render(request, 'payments/done.html')
+
+
+@csrf_exempt
+def payment_canceled(request):
+    return render(request, 'payments/canceled.html')
 
 
 

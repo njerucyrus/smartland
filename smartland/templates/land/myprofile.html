@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+
+
+{% block  content %}
+
+
+    <div class="col col-md-10">
+
+
+        <div class="col col-sm-12">
+            <div class="panel panel-inverse">
+                <div class="panel-heading">
+                    My Profile Details
+                </div>
+                <div class="panel-body" style="background: #f7e1b5!important;">
+                <div style="margin-left: 250px;">
+                    <div class="profile-avartar ">
+                        {% if profile.profile_image %}
+                            <img src="{{ profile.profile_image.url }}" alt="{{ profile.user.username }}"
+                                 class="profile-avartar">
+                        {% else %}
+                            <img src="{% static 'img/no-profile-image.jpg' %}" class="profile-avartar">
+                        {% endif %}
+                    </div>
+               <p style="font-weight: bold;" > Full Name: {{ profile.user.first_name }} &nbsp; {{ profile.user.last_name }}<br>
+                Email : {{ profile.user.email }}<br>
+                Phone Number : {{ profile.phone_number }}<br>
+                National ID: {{ profile.id_no }}
+               </p>
+                </div>
+                </div>
+                <div class="panel-footer">
+
+                    <p style="font-weight: bold;">This account was created on ({{ profile.user.date_joined }})</p>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+{% endblock %}
