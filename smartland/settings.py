@@ -25,7 +25,7 @@ PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 SECRET_KEY = 'cff&mf*zt#6^*xm1=6r_#-xm&(88!g2bq_f2158%ziatvq1pne'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -144,8 +144,8 @@ PAYPAL_TEST = True
 
 # AT credentials
 
-SAND_BOX = True
-if SAND_BOX:
+
+if DEBUG:
 
     USERNAME = 'njerucyrus123'
 
@@ -158,12 +158,12 @@ if SAND_BOX:
     METADATA = {}
 
 else:
-    USERNAME = 'njerucyrus'
+    USERNAME = os.environ['AT_USERNAME']
 
-    API_KEY = ''
+    API_KEY = os.environ['API_KEY']
 
-    PRODUCT_NAME = 'Hudutech'
+    PRODUCT_NAME = os.environ['PRODUCT_NAME']
 
-    CURRENCY_CODE = 'KES'
+    CURRENCY_CODE = os.environ['CURRENCY_CODE']
 
     METADATA = {}
