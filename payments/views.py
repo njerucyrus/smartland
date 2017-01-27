@@ -38,7 +38,7 @@ def land_transfer_payment(request, pk=None):
                 currency_code = settings.CURRENCY_CODE
                 metadata = settings.METADATA
                 """  this code will be inactive in production """
-                if settings.SAND_BOX:
+                if settings.DEBUG:
                     gateway = AfricasTalkingGateway(username, api_key, "sandbox")
                     transaction_id = gateway.initiateMobilePaymentCheckout(
                         product_name,
