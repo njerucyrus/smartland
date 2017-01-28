@@ -80,7 +80,7 @@ def land_transfer_payment(request, pk=None):
                         amount=amount,
                     )
                     payment.save()
-                    land.fee_paid = True
+                    land.fee_paid = False
                     land.save()
                     success_message = 'Payment Initiated successfully Check your phone to complete the payment'
                     return render(request, 'payments/transfer_payment.html',
@@ -118,6 +118,9 @@ def mpesa_notification_callback(request):
             payment.status = status
             payment.payment_mode = provider
             payment.save()
+            land = get_object_or_404(Land, title_deed=payment.title_deed)
+            land.fee_paid = True
+            land.save()
             username = settings.USERNAME
             api_key = settings.API_KEY
             if settings.SAND_BOX:
@@ -148,7 +151,7 @@ def mpesa_notification_callback(request):
             return HttpResponse('error occurred transaction not completed')
     except (KeyError, AfricasTalkingGatewayException) as e:
         print 'error occurred', str(e)
-        return HttpResponse('error occurred transaction not completed')
+        return HttpResponse('error occurred transaction not completed', str(e))
 
 
 @login_required(login_url='/login/')
