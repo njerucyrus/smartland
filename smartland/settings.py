@@ -25,7 +25,7 @@ PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 SECRET_KEY = 'cff&mf*zt#6^*xm1=6r_#-xm&(88!g2bq_f2158%ziatvq1pne'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -131,21 +131,16 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-
-
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
-
 
 # django paypal configurations
 PAYPAL_RECEIVER_EMAIL = 'njerucyrusdev@gmail.com'
 #turn this off when you go to live account
 PAYPAL_TEST = True
 
-
+SAND_BOX = True
 # AT credentials
-
-
-if DEBUG:
+if SAND_BOX:
 
     USERNAME = 'njerucyrus123'
 
