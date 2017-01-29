@@ -138,7 +138,7 @@ PAYPAL_RECEIVER_EMAIL = 'njerucyrusdev@gmail.com'
 #turn this off when you go to live account
 PAYPAL_TEST = True
 
-SAND_BOX = False
+SAND_BOX = True
 # AT credentials
 if SAND_BOX:
 

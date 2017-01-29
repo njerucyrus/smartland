@@ -38,7 +38,7 @@ def login_user(request):
     next_url = request.GET.get('next', '')
     #check if user is authenticated and redirect user to root page
     if request.user.is_authenticated():
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect('/index/')
 
     # if not request.user.is_authenticated():
     #         return HttpResponseRedirect('/login/')
@@ -54,7 +54,7 @@ def login_user(request):
                 login(request, user)
 
                 if next_url == '':
-                    return HttpResponseRedirect('/')
+                    return HttpResponseRedirect('/index/')
                 elif next_url:
                     return HttpResponseRedirect(next_url)
         else:
