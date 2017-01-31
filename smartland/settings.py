@@ -138,7 +138,7 @@ PAYPAL_RECEIVER_EMAIL = 'njerucyrusdev@gmail.com'
 #turn this off when you go to live account
 PAYPAL_TEST = True
 
-SAND_BOX = True
+SAND_BOX = False
 # AT credentials
 if SAND_BOX:
 
@@ -149,8 +149,6 @@ if SAND_BOX:
     PRODUCT_NAME = 'SmartLand'
 
     CURRENCY_CODE = 'KES'
-
-    METADATA = {}
 
 else:
 

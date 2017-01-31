@@ -7,8 +7,8 @@ urlpatterns = [
     # Examples:
     # url(r'^$', 'smartland.views.home', name='home'),
     url(r'^paypal/', include('paypal.standard.ipn.urls')),
-    url(r'^', include('land.urls', namespace='land')),
     url(r'^payments/', include('payments.urls', namespace='payments')),
+    url(r'^', include('land.urls', namespace='land')),
 
 
     url(r'^admin/', include(admin.site.urls)),

@@ -58,7 +58,7 @@ class LandTransfers(models.Model):
 
 
 class LandPurchases(models.Model):
-    land = models.OneToOneField(Land)
+    land = models.OneToOneField(Land, )
     owner = models.ForeignKey(User, )
     buyer = models.ForeignKey(LandUserProfile, )
     deposit = models.DecimalField(default=0.0, max_digits=10, decimal_places=2)
@@ -66,6 +66,7 @@ class LandPurchases(models.Model):
     email = models.EmailField()
     approved = models.BooleanField(default=False)
     rejected = models.BooleanField(default=False)
+    paid = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
 
     class Meta:

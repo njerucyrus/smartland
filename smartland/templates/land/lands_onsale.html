@@ -28,7 +28,7 @@
                     <td>{{ land.size }}</td>
                     <td>{{ land.location }}</td>
                     <td>{{ land.land_value }}</td>
-                    <td><a href="{% url 'land:purchase' pk=land.pk %}">Purchase Now</a></td>
+                    <td><a href="{% url 'payments:purchase' pk=land.pk %}">Purchase Now</a></td>
                     <td><a href="{% url 'land:landonsaledetail' title_deed=land.title_deed %}">More Details about this land</a></td>
                 </tr>
             {% endfor %}

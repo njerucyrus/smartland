@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="col col-md-10">
+{% if purchased_lands %}
+    <table class="table table-responsive">
+    <thead>
+    <th>Land Title Deed</th>
+    <th>Purchased From</th>
+    <th>Deposit Amount</th>
+    <th>Date Purchased</th>
+    </thead>
+    {% for land in purchased_lands %}
+        <tr>
+        <td>{{ land.land.title_deed }}</td>
+        <td>{{ land.owner.username }}</td>
+        <td>{{ land.deposit }}</td>
+        <td>{{ land.date }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+  {% else %}
+
+    <div class="alert alert-info">
+    <p>You have not purchased any land <a href="{% url 'land:lands_onsale' %}" >Click here to purchase</a></p>
+    </div>
+
+{% endif %}
+</div>
+{% endblock %}

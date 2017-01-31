@@ -61,7 +61,7 @@ class LandPurchaseForm(forms.Form):
         attrs={'placeholder': '07XX XXX XXX'}
     ))
     email = forms.EmailField(widget=forms.EmailInput(
-        attrs={'placeholder': 'Your Paypal Email Address'}
+        attrs={'placeholder': 'Your Email Address'}
     ))
     deposit = forms.DecimalField(max_digits=10, decimal_places=2, disabled=True)
 

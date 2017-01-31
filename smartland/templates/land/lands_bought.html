@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="col col-md-10">
+    <div class="row">
+    <div class="col col-md-8">
+    {% if lands_bought %}
         <table class="table table-responsive" border="1px;">
             <tr style="color: red; font-weight: bold">
                 <td>Title Deed</td>
@@ -24,10 +26,10 @@
                 <td>{{ land.deposit }}</td>
                 <td>{{ land.date }}</td>
                 <td>
-                  <td> <a href="{% url 'land:approve' title_deed=land.land.title_deed %}" class="btn btn-success btn-raised
-                  {% if land.approved %} disabled {% endif %}">Accept & Approve Purchase</a></td>
-                  <td><a href="{%  url 'land:reject' title_deed=land.land.title_deed %}" class="btn btn-danger btn-raised
-                  {% if not land.approved %} disabled {% endif %}">Reject& Refund</a></td>
+                 <p><a href="{% url 'land:approve' title_deed=land.land.title_deed %}" class="btn btn-success
+                  {% if land.approved %} disabled {% endif %}">Accept & Approve Purchase</a></p>
+                  <p><a href="{%  url 'land:reject' title_deed=land.land.title_deed %}" class=" btn btn-danger
+                  {% if not land.approved %} disabled {% endif %}">Reject& Refund</a></p>
 
                 </td>
                 </tr>
@@ -35,6 +37,12 @@
             {% endfor %}
 
         </table>
+    {% else %}
+    <div class="alert alert-danger">
+       <h1>No Lands bought.</h1>
     </div>
+    {% endif %}
 
+    </div>
+</div>
 {% endblock %}

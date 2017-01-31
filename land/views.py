@@ -144,6 +144,7 @@ def register_land(request):
         land_form = LandRegistrationForm()
     return render(request, 'land/register_land.html', {'land_form': land_form, })
 
+
 @login_required(login_url='/login/')
 def transfer_land(request, pk=None):
     land = get_object_or_404(Land, pk=pk)
@@ -217,78 +218,9 @@ def land_on_sale(request):
 
 
 @login_required(login_url='/login/')
-def purchase_land(request, pk=None):
-    land = get_object_or_404(Land, pk=pk)
-    deposit = float(land.land_value) * 0.75
-    title_deed = land.title_deed
-    initial = {'deposit': deposit, 'title_deed': title_deed}
-
-    if request.method == 'POST':
-        purchase_form = LandPurchaseForm(request.POST, initial=initial)
-
-        if purchase_form.is_valid():
-
-            cd = purchase_form.cleaned_data
-            phone_number = cd['phone_number']
-            email = cd['email']
-            deposit = cd['deposit']
-            user = get_object_or_404(User, username=request.user)
-            buyer = get_object_or_404(LandUserProfile, user=user)
-            clean_phone_number = CleanPhoneNumber(phone_number).validate_phone_number()
-            # set session variables
-            request.session['buyer_phone_number'] = clean_phone_number
-            request.session['buyer_email'] = email
-            request.session['deposit_amount'] = float(deposit)
-            request.session['buyer_username'] = str(request.user)
-            request.session['seller_username'] = str(land.user.user.username)
-            request.session['title_deed'] = str(land.title_deed)
-
-            return HttpResponseRedirect('/land-purchase-payment/')
-            # try:
-            #     land_purchase = LandPurchases.objects.create(
-            #         owner=land.user.user,
-            #         land=land,
-            #         buyer=buyer,
-            #         email=email,
-            #         phone_number=clean_phone_number,
-            #         deposit=deposit,
-            #     )
-            #
-            #     land_purchase.save()
-            #     land.on_sale = False
-            #     land.save()
-            # except IntegrityError, e:
-            #     error_msg = 'Land Already Purchased by another user', e
-            #     return render_to_response(
-            #         'land/purchase_land.html',
-            #         {'error': error_msg, }
-            #     )
-            # # send notification to the land owner
-            # message = 'The Land with title deed({0}), has been purchased by {1} on {2}, a deposit of Ksh ' \
-            #           '{3} has been sent into your Paypal account.The buyers Phone number is {4}'.\
-            #     format(title_deed, request.user,  timezone.now(), deposit,  clean_phone_number)
-            #
-            # notification = Notification.objects.create(
-            #     user=land.user.user,
-            #     message_from=str(request.user),
-            #     message=message,
-            # )
-            # notification.save()
-            #
-            # success_message = 'You have successfully purchased the land title deed {0}'. \
-            #     format(land.title_deed)
-
-    else:
-        purchase_form = LandPurchaseForm(initial=initial)
-    return render(request, 'land/purchase_land.html', {
-        'purchase_form': purchase_form
-    })
-
-
-@login_required(login_url='/login/')
 def lands_bought(request):
     user = get_object_or_404(User, username=request.user)
-    lands = LandPurchases.objects.filter(owner=user)
+    lands = LandPurchases.objects.filter(owner=user, paid=True)
     return render(request, 'land/lands_bought.html', {'lands_bought': lands})
 
 
@@ -335,7 +267,7 @@ def get_notification(request, user):
 @login_required(login_url='/login/')
 def approve_purchased_land(request, title_deed):
     land_obj = get_object_or_404(Land, title_deed=title_deed)
-    land = get_object_or_404(LandPurchases, land=land_obj)
+    land = get_object_or_404(LandPurchases, land=land_obj, paid=True)
     land.approved = True
     land.rejected = False
     land.save()
@@ -349,7 +281,7 @@ def approve_purchased_land(request, title_deed):
 @login_required(login_url='/login/')
 def reject_purchased_land(request, title_deed):
     land_obj = get_object_or_404(Land, title_deed=title_deed)
-    land = get_object_or_404(LandPurchases, land=land_obj)
+    land = get_object_or_404(LandPurchases, land=land_obj, paid=True)
     land.rejected = True
     land.approved = False
     land.save()
@@ -378,5 +310,14 @@ def search_land_onsale(request):
             return render(request, 'land/search_land_onsale.html', {'lands': lands, })
     else:
         return render(request, 'land/search_land_onsale.html', {'search_form': SearchLandForm(), })
+
+
+@login_required(login_url='/login/')
+def show_land_purchased(request):
+    user = get_object_or_404(User, username=request.user)
+    buyer = get_object_or_404(LandUserProfile, user=user)
+    purchased_lands = LandPurchases.objects.filter(buyer=buyer, paid=True, approved=True)
+    return render(request, 'land/myland_purchases.html', {'purchased_lands': purchased_lands, })
+
 
 

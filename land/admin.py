@@ -51,6 +51,7 @@ class LandPurchasesAdmin(admin.ModelAdmin):
         'deposit',
         'phone_number',
         'email',
+        'paid',
         'approved',
         'rejected',
         'date'

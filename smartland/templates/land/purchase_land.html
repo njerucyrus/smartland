@@ -21,10 +21,16 @@
     {% else %}
      <div class="">
      <div class="">
-         <p>Make Land Deposit Payment using PayPal by filling the form below.</p>
+         <p>Make Land Deposit Payment using Mpesa.</p>
+         <ul class="list-group">
+             <li class="list-group-item">How it works.</li>
+                <li class="list-group-item">Step 1: Enter you phone number in the form below</li>
+                <li class="list-group-item">Step 2: Click on the mobile checkout button</li>
+                <li class="list-group-item">Step 3: Check your mobile phone and complete the payment by accepting. done!!</li>
+         </ul>
      </div>
        <div class="img-thumbnail">
-                <img src="{%  static 'img/paypal.png' %}">
+                <img src="{%  static 'img/mpesa.png' %}">
        </div>
 
        </div>
@@ -32,7 +38,7 @@
         <form action="" method="post">
             {% csrf_token %}
             {{ purchase_form | crispy }}
-            <input type="submit" value="purchase" class="btn btn-primary btn-raised">
+            <input type="submit" value="mobile checkout-->" class="btn btn-primary btn-raised">
         </form>
     {% endif %}
 </div>

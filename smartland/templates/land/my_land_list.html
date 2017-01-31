@@ -3,6 +3,7 @@
 
 {% block content %}
     <div class="col col-md-10">
+       {% if lands %}
         {% for land in lands %}
                 <div class="panel panel-inverse">
                     <div class="panel-heading">
@@ -33,5 +34,10 @@
                 </div>
 
         {% endfor %}
+    {% else %}
+    <div class="alert alert-info">
+        <p>You dont have any land registered in the system <a href="{% url 'land:register_land' %}"> Click Here</a> To register Land with us</p>
+    </div>
+    {% endif %}
     </div>
 {% endblock %}
